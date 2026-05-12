@@ -1,0 +1,105 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.el-menu {
+  border-right: none !important;
+}
+
+.el-aside {
+  transition: width 0.3s;
+}
+
+.el-main {
+  background-color: #f5f7fa;
+}
+
+.el-table {
+  margin-top: 20px;
+}
+
+.el-pagination {
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.search-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 20px;
+}
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #409eff;
+  margin: 10px 0;
+}
+
+.stat-card .stat-label {
+  color: #909399;
+  font-size: 14px;
+}
+
+.seat-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.seat-row {
+  display: flex;
+  gap: 5px;
+}
+
+.seat {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.seat.available {
+  background-color: #67c23a;
+  color: #fff;
+}
+
+.seat.sold {
+  background-color: #909399;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.seat.locked {
+  background-color: #e6a23c;
+  color: #fff;
+}
+
+.seat.selected {
+  background-color: #409eff;
+  color: #fff;
+}

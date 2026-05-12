@@ -1,0 +1,176 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  real_name TEXT,
+  role TEXT DEFAULT 'staff',
+  phone TEXT,
+  email TEXT,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS movies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  poster TEXT,
+  type TEXT,
+  duration INTEGER,
+  synopsis TEXT,
+  actors TEXT,
+  director TEXT,
+  release_date DATE,
+  rating REAL DEFAULT 0,
+  trailer_url TEXT,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS halls (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  rows INTEGER NOT NULL,
+  cols INTEGER NOT NULL,
+  type TEXT DEFAULT 'normal',
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS schedules (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  movie_id INTEGER NOT NULL,
+  hall_id INTEGER NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  price REAL NOT NULL,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (movie_id) REFERENCES movies(id),
+  FOREIGN KEY (hall_id) REFERENCES halls(id)
+);
+
+CREATE TABLE IF NOT EXISTS seats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  schedule_id INTEGER NOT NULL,
+  row_num INTEGER NOT NULL,
+  col_num INTEGER NOT NULL,
+  seat_label TEXT NOT NULL,
+  status TEXT DEFAULT 'available',
+  locked_by INTEGER,
+  locked_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (schedule_id) REFERENCES schedules(id)
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  order_no TEXT UNIQUE NOT NULL,
+  schedule_id INTEGER NOT NULL,
+  member_id INTEGER,
+  seats TEXT NOT NULL,
+  total_price REAL NOT NULL,
+  status TEXT DEFAULT 'pending',
+  payment_method TEXT,
+  payment_time DATETIME,
+  user_id INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (schedule_id) REFERENCES schedules(id),
+  FOREIGN KEY (member_id) REFERENCES members(id)
+);
+
+CREATE TABLE IF NOT EXISTS members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  phone TEXT UNIQUE NOT NULL,
+  name TEXT,
+  level INTEGER DEFAULT 1,
+  points INTEGER DEFAULT 0,
+  balance REAL DEFAULT 0,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS member_points_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  member_id INTEGER NOT NULL,
+  points INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  description TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (member_id) REFERENCES members(id)
+);
+
+CREATE TABLE IF NOT EXISTS member_recharge_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  member_id INTEGER NOT NULL,
+  amount REAL NOT NULL,
+  payment_method TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (member_id) REFERENCES members(id)
+);
+
+CREATE TABLE IF NOT EXISTS promotions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  discount REAL,
+  condition_amount REAL,
+  start_date DATE,
+  end_date DATE,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS coupons (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  promotion_id INTEGER,
+  code TEXT UNIQUE NOT NULL,
+  discount REAL NOT NULL,
+  min_amount REAL DEFAULT 0,
+  expire_date DATE,
+  used INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (promotion_id) REFERENCES promotions(id)
+);
+
+CREATE TABLE IF NOT EXISTS ticket_types (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  discount REAL NOT NULL,
+  description TEXT,
+  status INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS news (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  content TEXT,
+  type TEXT DEFAULT 'notice',
+  cover_image TEXT,
+  status INTEGER DEFAULT 1,
+  publish_date DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS daily_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date DATE UNIQUE NOT NULL,
+  box_office REAL DEFAULT 0,
+  tickets_sold INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT OR IGNORE INTO ticket_types (name, discount, description, status) VALUES
+('普通票', 1.0, '标准票价', 1),
+('学生票', 0.8, '凭学生证购买', 1),
+('情侣票', 0.9, '双人套票', 1),
+('工作日票', 0.85, '周一至周五使用', 1),
+('周末票', 1.1, '周六日使用', 1);
